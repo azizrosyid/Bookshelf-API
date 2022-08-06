@@ -75,4 +75,13 @@ const addBookHandler = (request, h) => {
     .code(201);
 };
 
-module.exports = { addBookHandler };
+const getAllBooksHandler = (request, h) => h
+  .response({
+    status: 'success',
+    data: {
+      books: books.map(({ id, name, publisher }) => ({ id, name, publisher })),
+    },
+  })
+  .code(200);
+
+module.exports = { addBookHandler, getAllBooksHandler };
