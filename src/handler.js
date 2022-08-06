@@ -65,7 +65,6 @@ const addBookHandler = (request, h) => {
   }
 
   return h
-
     .response({
       status: 'success',
       data: {
@@ -76,18 +75,40 @@ const addBookHandler = (request, h) => {
     .code(201);
 };
 
-const getAllBooksHandler = (request, h) => h
-  .response({
-    status: 'success',
-    data: {
-      books: books.map(({ id, name, publisher }) => ({
-        id,
-        name,
-        publisher,
-      })),
-    },
-  })
-  .code(200);
+const getAllBooksHandler = (request, h) => {
+  const { name: nameQuery, reading: readingQuery, finished: finishedQuery } = request.query;
+  let filteredBooks = books;
+
+  if (nameQuery !== undefined) {
+    const query = nameQuery.toLowerCase();
+    filteredBooks = filteredBooks.filter((book) => {
+      const bookName = book.name.toLowerCase();
+      return bookName.includes(query);
+    });
+  }
+
+  if (readingQuery !== undefined) {
+    const isReading = Boolean(parseInt(readingQuery, 10));
+    filteredBooks = filteredBooks.filter((book) => book.reading === isReading);
+  }
+
+  if (finishedQuery !== undefined) {
+    const isFinished = Boolean(parseInt(finishedQuery, 10));
+    filteredBooks = filteredBooks.filter((book) => book.finished === isFinished);
+  }
+
+  filteredBooks = filteredBooks.map(({ id, name, publisher }) => ({ id, name, publisher }));
+
+  return h
+    .response({
+      status: 'success',
+      data: {
+        books: filteredBooks,
+        isFinished: Boolean(parseInt(finishedQuery, 10)),
+      },
+    })
+    .code(200);
+};
 
 const getDetailBookHandler = (request, h) => {
   const { bookId } = request.params;
