@@ -22,7 +22,7 @@ const addBookHandler = (request, h) => {
     return h
       .response({
         status: 'fail',
-        error: 'Gagal menambahkan buku. Mohon isi nama buku',
+        message: 'Gagal menambahkan buku. Mohon isi nama buku',
       })
       .code(400);
   }
@@ -31,7 +31,7 @@ const addBookHandler = (request, h) => {
     return h
       .response({
         status: 'fail',
-        error: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
       })
       .code(400);
   }
@@ -58,7 +58,7 @@ const addBookHandler = (request, h) => {
     return h
       .response({
         status: 'error',
-        error: 'Buku gagal ditambahkan',
+        message: 'Buku gagal ditambahkan',
       })
       .code(500);
   }
