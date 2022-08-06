@@ -31,7 +31,8 @@ const addBookHandler = (request, h) => {
     return h
       .response({
         status: 'fail',
-        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+        message:
+          'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
       })
       .code(400);
   }
@@ -79,7 +80,11 @@ const getAllBooksHandler = (request, h) => h
   .response({
     status: 'success',
     data: {
-      books: books.map(({ id, name, publisher }) => ({ id, name, publisher })),
+      books: books.map(({ id, name, publisher }) => ({
+        id,
+        name,
+        publisher,
+      })),
     },
   })
   .code(200);
@@ -107,4 +112,94 @@ const getDetailBookHandler = (request, h) => {
     .code(200);
 };
 
-module.exports = { addBookHandler, getAllBooksHandler, getDetailBookHandler };
+const editBookHandler = (request, h) => {
+  const { bookId } = request.params;
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
+  } = request.payload;
+
+  if (!name) {
+    return h
+      .response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Mohon isi nama buku',
+      })
+      .code(400);
+  }
+
+  if (readPage > pageCount) {
+    return h
+
+      .response({
+        status: 'fail',
+        message:
+          'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+      })
+      .code(400);
+  }
+
+  const bookIndex = books.findIndex(({ id }) => id === bookId);
+
+  if (bookIndex === -1) {
+    return h
+      .response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Id tidak ditemukan',
+      })
+      .code(404);
+  }
+
+  if (readPage > pageCount) {
+    return h
+      .response({
+        status: 'fail',
+        message:
+          'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      })
+      .code(400);
+  }
+
+  const finished = pageCount === readPage;
+  const updatedAt = new Date().toISOString();
+
+  const book = {
+    ...books[bookIndex],
+    id: bookId,
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    finished,
+    reading,
+    updatedAt,
+  };
+
+  books[bookIndex] = book;
+
+  return h
+    .response({
+      status: 'success',
+      data: {
+        book,
+      },
+      message: 'Buku berhasil diperbarui',
+    })
+    .code(200);
+};
+
+module.exports = {
+  addBookHandler,
+  getAllBooksHandler,
+  getDetailBookHandler,
+  editBookHandler,
+};
